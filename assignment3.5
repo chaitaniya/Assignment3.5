@@ -1,0 +1,52 @@
+Q.1Explain what is High availability of Namenode.
+Ans.
+1.The NameNode is a single point of failure (SPOF) in an HDFS cluster.
+2.Each cluster has a single NameNode, and if that host or process became unavailable, 
+the cluster as a whole is unavailable until the NameNode is either restarted or brought up on a new host.
+3.The Secondary NameNode does not provide failover capability.
+4.The standard configuration reduces the total availability of an HDFS cluster in two major ways:
+  a..In the case of an unplanned event such as a host crash, the cluster is unavailable until an operator restarts the NameNode.
+  b..Planned maintenance events such as software or hardware upgrades on the NameNode machine result in periods of cluster downtime.
+5.HDFS HA addresses the above problems by providing the option of running two NameNodes in the same cluster, in an active/passive configuration. 
+6.These are referred to as the active NameNode and the standby NameNode. Unlike the Secondary NameNode, the standby NameNode is always on standby,
+ allowing a fast automatic failover to a new NameNode in the case that a host crashes, or an administrator-initiated failover for the 
+purpose of planned maintenance.
+
+
+
+Q2. Explain what is check pointing and how it is useful?
+Ans.
+1.Checkpointing is an essential part of maintaining and persisting filesystem metadata in HDFS. It’s crucial for efficient NameNode recovery and restart, 
+and is an important indicator of overall cluster health. 
+2.However, checkpointing can also be a source of confusion for operators of Apache Hadoop clusters.
+3.This filesystem metadata is stored in two different constructs: the fsimage and the edit log. The fsimage is a file that represents 
+a point-in-time snapshot of the filesystem’s metadata
+4.A typical edit ranges from 10s to 100s of bytes, but over time enough edits can accumulate to become unwieldy. A couple of problems can arise from these large edit logs. 
+In extreme cases, it can fill up all the available disk capacity on a node, but more subtly, a large edit log can substantially delay NameNode startup
+as the NameNode reapplies all the edits. This is where checkpointing comes in.
+5.Checkpointing is a process that takes an fsimage and edit log and compacts them into a new fsimage. 
+6.This way, instead of replaying a potentially unbounded edit log, the NameNode can load the final in-memory state directly from the fsimage. 
+
+
+
+Q3. Explain what is HDFS federation.
+Ans.
+1.This is aIn Hadoop 2.x release series, it introduces HDFS Federation (a federation of multiple Active NameNodes that statically partition/divide 
+the filesystem namespace and each Active NameNode contain only one partition/portion),
+which allows a cluster to scale by adding more NameNodes horizontally, 
+each of which manages a portion of the filesystem namespace. 
+2.NameNodes are federated, that is, all these NameNodes work independently and don’t require any co-ordination with each other. 
+3.Far more efficient operation and reduces NameNode startup time.
+4.Each DataNode registers with all the NameNodes in the cluster and can store the data blocks for multiple NameNodes by logically partition (block pool) 
+disk for each NameNode and send periodic heartbeats and data block report to all NameNodes.
+
+
+
+
+Q4. What are the configuration files that are to be edited for sure while installing a hadoop cluster.
+Ans.
+The four files that need to be configured explicitly while setting up a single node hadoop cluster are:
+1.Core-site.xml
+2.HDFS-site.xml
+3.YARN-site.xml
+4.xml.
